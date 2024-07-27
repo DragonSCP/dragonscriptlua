@@ -96,11 +96,37 @@ function detectClicks()
         if clicked then
             if isClickInArea(mouseX, mouseY, menu.closeButtonArea) then
                 menu:toggleVisibility()
+            else
+                -- Verifica se o clique está na área de uma opção e alterna o estado
+                for i, option in ipairs(menu.options) do
+                    local optionText = menu.uiElements["option" .. i]
+                    local optionArea = {
+                        x1 = optionText.Position.X,
+                        y1 = optionText.Position.Y,
+                        x2 = optionText.Position.X + optionText.Size.X,
+                        y2 = optionText.Position.Y + optionText.Size.Y
+                    }
+                    if isClickInArea(mouseX, mouseY, optionArea) then
+                        option.active = not option.active
+                        menu:updateUI()
+                        if option.name == "Level Farm" then
+                            -- Chama a função para iniciar o auto-farm
+                            startAutoFarm()
+                        end
+                    end
+                end
             end
         end
         
         wait(0.1) -- Pequena pausa para evitar uso excessivo de CPU
     end
+end
+
+-- Função para iniciar o auto-farm
+function startAutoFarm()
+    local autoFarmScriptUrl = "https://raw.githubusercontent.com/DragonSCP/dragonscriptlua/main/autofarm.py"
+    local autoFarmScript = game:HttpGet(autoFarmScriptUrl)
+    loadstring(autoFarmScript)()
 end
 
 -- Inicialização do Menu
